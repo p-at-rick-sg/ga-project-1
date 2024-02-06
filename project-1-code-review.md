@@ -3,7 +3,7 @@
 | Each section must receive meet requirements overall in order to pass                                               |            | Link to Project 1 Requirements |
 | ------------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------ |
 | <h3>Planning Requirements</h3>                                                                                     | Complete?  | Comments (optional)            |
-| Your choice of game                                                                                                |            |                                | Quiz Game
+| Your choice of game                                                                                                |       Yes  | Quiz Game                      | 
 | A wireframe of your "main" game screen                                                                             |            |                                |
 | Annotations for each action / task represented in the wireframe                                                    |            |                                |
 |                                                                                                                    |            |                                |

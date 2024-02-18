@@ -1,0 +1,9 @@
+.game-board-container {
+  border: solid 2px red;
+}
+
+.d-table-cell {
+  width: 10px;
+  height: 10px;
+  border: solid 1px black;
+}

@@ -8,6 +8,7 @@
       rel="stylesheet"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css" />
     <title>Minsweeper Online</title>
   </head>
   <body>
@@ -22,9 +23,16 @@
       <div class="d-grid gap-3" style="grid-template-columns: 1fr 2fr 1fr">
         <div class="bg-body-tertiary border rounded-3 game-settings">
           <h1>Game Settings</h1>
+          <button type="button" class="btn btn-primary btn-play">
+            Play now
+          </button>
         </div>
 
-        <div class="bg-body-tertiary border rounded-3 game-area"></div>
+        <div class="bg-body-tertiary border rounded-3 game-area">
+          <div class="container game-board-container">
+            <!-- the main game board will be rendered here witrh DOM manipulation-->
+          </div>
+        </div>
 
         <div class="bg-body-tertiary border rounded-3 leaderboard">
           <h1>Leader Board</h1>

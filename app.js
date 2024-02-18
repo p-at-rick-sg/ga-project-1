@@ -84,29 +84,39 @@ gameBoardContainer.addEventListener('click', () => {
 
 const renderRowElements = numRows => {
   for (let i = 1; i <= numRows; i++) {
-    gameBoardContainer.innerHTML += `<div class="row row-${i}"></div>`;
+    gameBoardContainer.innerHTML += `<div class="row row-cols-${numRows} row-${i}"></div>`;
   }
 };
 
-const renderInitialBoard = arr => {
-  const NEW_ROW_START = `<div class="row">`;
-  const NEW_ROW_END = `</div>`;
-  const boardCells = [];
-  let i = arr.length - 1;
-  for (i; i >= 0; i--) {
-    const cell = arr[i];
-    if (cell.y === 1) {
-      gameBoardContainer.innerHTML += NEW_ROW_START;
-      boardCells.push(NEW_ROW_START);
-    }
-    newCell = `<div class="col-sm" data-id="${cell.x}-${cell.y}">CL</div>`;
-    gameBoardContainer.innerHTML += newCell;
-    // cache the cell to an array we can return
-    boardCells.push(newCell);
-    if (cell.y === 5) {
-      gameBoardContainer.innerHTML += NEW_ROW_END;
-      boardCells.push(NEW_ROW_END);
-    }
+const renderColumnElements = cellArr => {
+  // trying filter to get elements with the correct x value for the current line
+  const cellsInRows = [];
+  for (i = 0; i < mapHeight; i++) {
+    cellsInRows[i] = cellArr.filter(cell => cell.x === i + 1).reverse();
   }
-  return boardCells;
+  console.log(cellsInRows);
+  // const row1 = cellArr.filter(cell => cell.x === 1);
+  const allRowDivs = gameBoardContainer.childNodes;
+
+  //return boardCells;
 };
+
+// currentRow.innerHTML += `<button type="button" class="col btn btn-light">CL${cellArr[i].x}</button>`;
+
+// <div class="container text-center">
+//       <div class="row row-cols-3">
+//         <button type="button" class="col btn btn-light">CL1</button>
+//         <button type="button" class="col btn btn-light">CL2</button>
+//         <button type="button" class="col btn btn-light">CL3</button>
+//       </div>
+//       <div class="row row-cols-3">
+//         <button type="button" class="col btn btn-light">CL4</button>
+//         <button type="button" class="col btn btn-light">CL5</button>
+//         <button type="button" class="col btn btn-light">CL6</button>
+//       </div>
+//       <div class="row row-cols-3">
+//         <button type="button" class="col btn btn-light">CL7</button>
+//         <button type="button" class="col btn btn-light">CL9</button>
+//         <button type="button" class="col btn btn-light">CL9</button>
+//       </div>
+//     </div>

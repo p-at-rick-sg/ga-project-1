@@ -13,8 +13,7 @@
   </head>
   <body>
     <div class="container">
-      <header
-        class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
         <span class="display-1">Minesweeper 2024</span>
       </header>
     </div>
@@ -23,9 +22,34 @@
       <div class="d-grid gap-3" style="grid-template-columns: 1fr 2fr 1fr">
         <div class="bg-body-tertiary border rounded-3 game-settings">
           <h1>Game Settings</h1>
-          <button type="button" class="btn btn-primary btn-play">
-            Play now
-          </button>
+
+          <form id="setupForm">
+            <fieldset>
+              <legend>Select Difficulty:</legend>
+              <div>
+                <input
+                  type="radio"
+                  id="difficulty"
+                  name="difficulty"
+                  value="easy"
+                  checked
+                  required />
+                <label for="easy">Easy</label>
+              </div>
+
+              <div>
+                <input type="radio" id="difficulty" name="difficulty" value="medium" />
+                <label for="medium">Medium</label>
+              </div>
+
+              <div>
+                <input type="radio" id="difficulty" name="difficulty" value="hard" />
+                <label for="hard">Crikey!</label>
+              </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary btn-play">Play now</button>
+          </form>
         </div>
 
         <div class="bg-body-tertiary border rounded-3 game-area">
@@ -37,7 +61,6 @@
         </div>
       </div>
     </div>
-
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,17 +1,19 @@
 /* constants */
 const gameBoardContainer = document.querySelector('.game-board-container');
 const playButton = document.querySelector('.btn-play');
-// console.log(gameBoardContainer);
+const setupForm = document.getElementById('setupForm');
+const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
 /* state variables (initialise in function */
 let inPlay;
 let isWinner;
 let score;
 let timer;
+let difficulty;
 const totalMines = 10; //this will also be set at game setup - here for testing
 const mapWidth = 5; //this  and height will be set by thr user in game setup in final
 const mapHeight = 5;
 //const mapArray = [];  need to check the scope of this as we may need to declare globally if i need it outside of initialise
-var mapX = mapWidth; // use for itteration
+var mapX = mapWidth; // use for itteration purposes only
 var mapY = mapHeight;
 // const minesArray = []; //testing 1,1 values
 
@@ -23,6 +25,7 @@ var mapY = mapHeight;
 
 const createMapArray = mapArr => {
   //base case - both x and y have gone to 0
+  //console.log(mapX, mapY);
   if (mapX === 0) {
     //console.log(`Hit the base case: mapX is: ${mapX}`);
     mapArr.pop();
@@ -40,7 +43,7 @@ const createMapArray = mapArr => {
     //console.log(`In the NEW row loop and mapY is: ${mapY} and mapX is ${mapX}`);
     newCellObj = {x: mapX, y: mapY, mine: false, cleared: false, adjacent: 0};
     mapY -= 1;
-    return createMapArray([...mapArr, newCellObj]);
+    return createMapArray([...mapArr, newCellObj]); //try reversing this to get a correctly ordered array
   }
 };
 
@@ -70,11 +73,28 @@ const createMineMapCoords = minesArray => {
 const initialiseGame = () => {
   // TODO setup the game
   mapArray = createMapArray([]);
+  console.log(mapArray);
   minesArray = createMineMapCoords([]);
-  renderInitialBoard(mapArray);
+  console.log(minesArray);
+  renderRowElements(mapHeight);
+  renderColumnElements(mapArray);
 };
 
 /* event listeners */
+
+setupForm.addEventListener(
+  'submit',
+  e => {
+    for (const radioButton of difficultyRadios) {
+      if (radioButton.checked) {
+        difficulty = radioButton.value;
+        break;
+      }
+    }
+    e.preventDefault();
+  },
+  false
+);
 
 playButton.addEventListener('click', initialiseGame);
 
@@ -89,14 +109,21 @@ const renderRowElements = numRows => {
 };
 
 const renderColumnElements = cellArr => {
-  // trying filter to get elements with the correct x value for the current line
+  // split the cell array into muktiople row arrays and order them correctly
   const cellsInRows = [];
   for (i = 0; i < mapHeight; i++) {
     cellsInRows[i] = cellArr.filter(cell => cell.x === i + 1).reverse();
   }
-  console.log(cellsInRows);
-  // const row1 = cellArr.filter(cell => cell.x === 1);
+  // get the child arrays of the board container
   const allRowDivs = gameBoardContainer.childNodes;
+  //loop the rows and add the child cell elements
+  allRowDivs.forEach((currentRow, rowIdx) => {
+    cellsInRows[rowIdx].forEach((currentCell, cellIdx) => {
+      currentRow.innerHTML += `<button type="button" class="col btn btn-light">CL</button>`;
+    });
+  });
+
+  // currentRow.innerHTML += `<button type="button" class="col btn btn-light">CL</button>`;
 
   //return boardCells;
 };

@@ -12,10 +12,10 @@ let difficulty;
 const totalMines = 10; //this will also be set at game setup - here for testing
 const mapWidth = 5; //this  and height will be set by thr user in game setup in final
 const mapHeight = 5;
-//const mapArray = [];  need to check the scope of this as we may need to declare globally if i need it outside of initialise
+var mapArray = [];
+var minesArray = [];
 var mapX = mapWidth; // use for itteration purposes only
 var mapY = mapHeight;
-// const minesArray = []; //testing 1,1 values
 
 /* cached DOM elements (such as the baord innerHTML perhaps) */
 
@@ -23,13 +23,20 @@ var mapY = mapHeight;
 
 // TODO setup database connection and object for high scores
 
+const clearBoard = () => {
+  // NOT WORKING - mapArray is not being generated after the first game
+  //mapArray.length = 0;
+  console.log('clearing rendered board');
+  gameBoardContainer.innerHTML = '';
+  return 0;
+};
+
 const createMapArray = mapArr => {
   //base case - both x and y have gone to 0
-  //console.log(mapX, mapY);
   if (mapX === 0) {
     //console.log(`Hit the base case: mapX is: ${mapX}`);
     mapArr.pop();
-    return mapArr;
+    return mapArr.reverse(); //easier to reverse here that rewrite the whole function to work upwards given the issues I had!
   }
   //recursion cases
   if (mapY > 0) {
@@ -70,37 +77,69 @@ const createMineMapCoords = minesArray => {
   //return createMineMapCoords([...minesArray, newCoord]);
 };
 
-const initialiseGame = () => {
-  // TODO setup the game
+const initialiseGame = e => {
+  clearBoard();
+  console.log('setting up the new game');
+  for (const radioButton of difficultyRadios) {
+    if (radioButton.checked) {
+      difficulty = radioButton.value;
+      break;
+    }
+  }
+  //console.log(difficulty);
+  e.preventDefault();
+  // create the boad and render it
   mapArray = createMapArray([]);
   console.log(mapArray);
   minesArray = createMineMapCoords([]);
-  console.log(minesArray);
   renderRowElements(mapHeight);
   renderColumnElements(mapArray);
 };
 
+const handleBoardRightClick = e => {
+  e.preventDefault();
+  const x = e.target.getAttribute('data-x');
+  const y = e.target.getAttribute('data-y');
+  console.log(`x: ${x} y:${y}`);
+};
+
+const handleBoardLeftClick = e => {
+  e.preventDefault();
+  const x = e.target.getAttribute('data-x');
+  const y = e.target.getAttribute('data-y');
+  //console.log(`x: ${x} y:${y}`);
+  // get this for the update of the state array
+  selectedCellObj = findCellIndex(mapArray, x, y);
+  //check if the cell is a mine if yes - set isWinner to false
+  checkForMine(minesArray, x, y);
+};
+
+// func to find the index of a cell in the array using x,y coords
+const findCellIndex = (arr, x, y) => {
+  idx = arr.findIndex(obj => obj.x == x && obj.y == y);
+  return idx;
+};
+
+const checkForMine = (arr, x, y) => {
+  if (arr.find(obj => obj.x == x && obj.y == y)) {
+    console.log('hit');
+  } else {
+    console.log('miss');
+  }
+};
+
 /* event listeners */
 
-setupForm.addEventListener(
-  'submit',
-  e => {
-    for (const radioButton of difficultyRadios) {
-      if (radioButton.checked) {
-        difficulty = radioButton.value;
-        break;
-      }
-    }
-    e.preventDefault();
-  },
-  false
-);
+setupForm.addEventListener('submit', initialiseGame);
 
-playButton.addEventListener('click', initialiseGame);
-
-gameBoardContainer.addEventListener('click', () => {
-  console.log('Game board container was clicked');
+// listening for left and right clicks on the board
+gameBoardContainer.addEventListener('click', e => {
+  handleBoardLeftClick(e);
 });
+
+gameBoardContainer.oncontextmenu = e => {
+  handleBoardRightClick(e);
+};
 
 const renderRowElements = numRows => {
   for (let i = 1; i <= numRows; i++) {
@@ -112,38 +151,15 @@ const renderColumnElements = cellArr => {
   // split the cell array into muktiople row arrays and order them correctly
   const cellsInRows = [];
   for (i = 0; i < mapHeight; i++) {
-    cellsInRows[i] = cellArr.filter(cell => cell.x === i + 1).reverse();
+    cellsInRows[i] = cellArr.filter(cell => cell.x === i + 1);
   }
   // get the child arrays of the board container
   const allRowDivs = gameBoardContainer.childNodes;
   //loop the rows and add the child cell elements
   allRowDivs.forEach((currentRow, rowIdx) => {
     cellsInRows[rowIdx].forEach((currentCell, cellIdx) => {
-      currentRow.innerHTML += `<button type="button" class="col btn btn-light">CL</button>`;
+      currentRow.innerHTML += `<button type="button" class="col btn btn-light" data-x="${currentCell.x}" data-y="${currentCell.y}">X: ${currentCell.x} Y:${currentCell.y}</button>`;
     });
   });
-
-  // currentRow.innerHTML += `<button type="button" class="col btn btn-light">CL</button>`;
-
   //return boardCells;
 };
-
-// currentRow.innerHTML += `<button type="button" class="col btn btn-light">CL${cellArr[i].x}</button>`;
-
-// <div class="container text-center">
-//       <div class="row row-cols-3">
-//         <button type="button" class="col btn btn-light">CL1</button>
-//         <button type="button" class="col btn btn-light">CL2</button>
-//         <button type="button" class="col btn btn-light">CL3</button>
-//       </div>
-//       <div class="row row-cols-3">
-//         <button type="button" class="col btn btn-light">CL4</button>
-//         <button type="button" class="col btn btn-light">CL5</button>
-//         <button type="button" class="col btn btn-light">CL6</button>
-//       </div>
-//       <div class="row row-cols-3">
-//         <button type="button" class="col btn btn-light">CL7</button>
-//         <button type="button" class="col btn btn-light">CL9</button>
-//         <button type="button" class="col btn btn-light">CL9</button>
-//       </div>
-//     </div>

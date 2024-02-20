@@ -12,8 +12,8 @@ let difficulty;
 const totalMines = 10; //this will also be set at game setup - here for testing
 const mapWidth = 5; //this  and height will be set by thr user in game setup in final
 const mapHeight = 5;
-var mapArray = [];
-var minesArray = [];
+let mapArray = [];
+let minesArray = [];
 var mapX = mapWidth; // use for itteration purposes only
 var mapY = mapHeight;
 
@@ -26,6 +26,8 @@ var mapY = mapHeight;
 const clearBoard = () => {
   // NOT WORKING - mapArray is not being generated after the first game
   //mapArray.length = 0;
+  mapX = mapWidth;
+  mapY = mapHeight;
   console.log('clearing rendered board');
   gameBoardContainer.innerHTML = '';
   return 0;
@@ -40,7 +42,7 @@ const createMapArray = mapArr => {
   }
   //recursion cases
   if (mapY > 0) {
-    newCellObj = {x: mapX, y: mapY, mine: false, cleared: false, adjacent: 0};
+    newCellObj = {x: mapX, y: mapY, mine: false, checked: false, value: null};
     mapY -= 1;
     return createMapArray([...mapArr, newCellObj]);
   }
@@ -77,16 +79,19 @@ const createMineMapCoords = minesArray => {
   //return createMineMapCoords([...minesArray, newCoord]);
 };
 
+const addMinesToMap = (mapArr, mineArr) => {
+  console.log(mapArr, mineArr);
+};
+
 const initialiseGame = e => {
   clearBoard();
-  console.log('setting up the new game');
   for (const radioButton of difficultyRadios) {
     if (radioButton.checked) {
       difficulty = radioButton.value;
       break;
     }
   }
-  //console.log(difficulty);
+  //console.log(difficulty);  // need this later for the setting of the
   e.preventDefault();
   // create the boad and render it
   mapArray = createMapArray([]);

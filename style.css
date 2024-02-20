@@ -12,3 +12,7 @@ legend {
   font-size: 12px;
   color: darkgray;
 }
+
+.notification {
+  display: none;
+}

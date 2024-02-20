@@ -9,13 +9,13 @@ let isWinner;
 let score;
 let timer;
 let difficulty;
-const totalMines = 10; //this will also be set at game setup - here for testing
-const mapWidth = 5; //this  and height will be set by thr user in game setup in final
-const mapHeight = 5;
+let totalMines = 10; //this will also be set at game setup - here for testing
+let mapWidth = 5; //this  and height will be set by thr user in game setup in final
+let mapHeight = 5;
 let mapArray = [];
 let minesArray = [];
-var mapX = mapWidth; // use for itteration purposes only
-var mapY = mapHeight;
+let mapX = mapWidth; // use for itteration purposes only
+let mapY = mapHeight;
 
 /* cached DOM elements (such as the baord innerHTML perhaps) */
 
@@ -83,6 +83,26 @@ const addMinesToMap = (mapArr, mineArr) => {
   console.log(mapArr, mineArr);
 };
 
+const setDifficulty = difficulty => {
+  switch (difficulty) {
+    case 'easy':
+      mapWidth = mapX = 5;
+      mapHeight = mapY = 5;
+      totalMines = 10;
+      break;
+    case 'medium':
+      mapWidth = mapX = 10;
+      mapHeight = mapY = 10;
+      totalMines = 20;
+      break;
+    case 'hard':
+      mapWidth = mapX = 20;
+      mapHeight = mapY = 20;
+      totalMines = 40;
+      break;
+  }
+};
+
 const initialiseGame = e => {
   clearBoard();
   for (const radioButton of difficultyRadios) {
@@ -93,10 +113,11 @@ const initialiseGame = e => {
   }
   //console.log(difficulty);  // need this later for the setting of the
   e.preventDefault();
+  setDifficulty(difficulty);
   // create the boad and render it
   mapArray = createMapArray([]);
-  console.log(mapArray);
   minesArray = createMineMapCoords([]);
+  addMinesToMap(mapArray, minesArray);
   renderRowElements(mapHeight);
   renderColumnElements(mapArray);
 };

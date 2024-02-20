@@ -28,7 +28,6 @@ const clearBoard = () => {
   //mapArray.length = 0;
   mapX = mapWidth;
   mapY = mapHeight;
-  console.log('clearing rendered board');
   gameBoardContainer.innerHTML = '';
   return 0;
 };
@@ -36,13 +35,12 @@ const clearBoard = () => {
 const createMapArray = mapArr => {
   //base case - both x and y have gone to 0
   if (mapX === 0) {
-    //console.log(`Hit the base case: mapX is: ${mapX}`);
     mapArr.pop();
     return mapArr.reverse(); //easier to reverse here that rewrite the whole function to work upwards given the issues I had!
   }
   //recursion cases
   if (mapY > 0) {
-    newCellObj = {x: mapX, y: mapY, value: null}; //values are null, clear, mine or adjacent mine #
+    newCellObj = {x: mapX, y: mapY, flagged: false, value: null}; //values are null, clear, mine or adjacent mine #
     mapY -= 1;
     return createMapArray([...mapArr, newCellObj]);
   }
@@ -50,7 +48,7 @@ const createMapArray = mapArr => {
     mapY = mapWidth;
     mapX -= 1;
     //console.log(`In the NEW row loop and mapY is: ${mapY} and mapX is ${mapX}`);
-    newCellObj = {x: mapX, y: mapY, value: null};
+    newCellObj = {x: mapX, y: mapY, flagged: false, value: null};
     mapY -= 1;
     return createMapArray([...mapArr, newCellObj]); //try reversing this to get a correctly ordered array
   }
@@ -63,7 +61,6 @@ const createMineMapCoords = minesArray => {
   // recursion case
   const x = Math.floor(Math.random() * mapWidth + 1);
   const y = Math.floor(Math.random() * mapHeight + 1);
-  //console.log(`x: ${x} and y: ${y} height: ${mapHeight}`);
   const newCoord = {x: x, y: y};
   // logic to check for duplicates
   const preExisting = minesArray.some(coord => {
@@ -72,15 +69,13 @@ const createMineMapCoords = minesArray => {
     }
     return false;
   });
-  //console.log(preExisting); // check if the exact element already exists - if it does, return without adding
+  // check if the exact element already exists - if it does, return without adding
   return preExisting
     ? createMineMapCoords([...minesArray])
     : createMineMapCoords([...minesArray, newCoord]);
-  //return createMineMapCoords([...minesArray, newCoord]);
 };
 
 const addMinesToMap = (mapArr, mineArr) => {
-  console.log(mapArr, mineArr);
   //get each mines coordinates
   for (const mine of mineArr) {
     const x = mine.x;
@@ -91,12 +86,35 @@ const addMinesToMap = (mapArr, mineArr) => {
   }
 };
 
+const addNeighborsToMap = () => {
+  mapArray.forEach(cell => {
+    if (cell.value === 'mine') {
+      const centreX = cell.x;
+      const centreY = cell.y;
+      console.log(centreX + ' ' + centreY);
+      for (let x = centreX - 1; x <= centreX + 1; x++) {
+        for (let y = centreY - 1; y <= centreY + 1; y++) {
+          if (x === centreX && y === centreY) {
+            console.log('original cell');
+          } else if (findCellIndex(mapArray, x, y) === 1000) {
+            console.log('index value was 1000 to this is an invalid cell');
+          } else {
+            // do the checks on these cells
+            console.log(`add 1 to the value of cell ${x} ${y}`);
+            mapArray[findCellIndex(mapArray, x, y)].value += 1;
+          }
+        }
+      }
+    }
+  });
+};
+
 const setDifficulty = difficulty => {
   switch (difficulty) {
     case 'easy':
       mapWidth = mapX = 5;
       mapHeight = mapY = 5;
-      totalMines = 10;
+      totalMines = 2; //changed back after testing the neighbor f
       break;
     case 'medium':
       mapWidth = mapX = 10;
@@ -111,6 +129,7 @@ const setDifficulty = difficulty => {
   }
 };
 
+/* MAIN GAME FUNCTION */
 const initialiseGame = e => {
   clearBoard();
   for (const radioButton of difficultyRadios) {
@@ -119,15 +138,17 @@ const initialiseGame = e => {
       break;
     }
   }
-  //console.log(difficulty);  // need this later for the setting of the
   e.preventDefault();
   setDifficulty(difficulty);
   // create the boad and render it
   mapArray = createMapArray([]);
   minesArray = createMineMapCoords([]);
   addMinesToMap(mapArray, minesArray);
+  addNeighborsToMap; // with a filtered mapArray with only mine value elements
   renderRowElements(mapHeight);
   renderColumnElements(mapArray);
+  addNeighborsToMap();
+  console.log(mapArray);
 };
 
 const handleBoardRightClick = e => {
@@ -143,36 +164,37 @@ const handleBoardLeftClick = e => {
   const y = e.target.getAttribute('data-y');
   //console.log(`x: ${x} y:${y}`);
   // get this for the update of the state array
-  selectedCellObj = findCellIndex(mapArray, x, y);
+  selectedCellIdx = findCellIndex(mapArray, x, y);
   //check if the cell is a mine if yes - set isWinner to false
-  checkForMine(minesArray, x, y);
+  checkCells(mapArray[selectedCellIdx]); // LATER
 };
 
 // func to find the index of a cell in the array using x,y coords
 const findCellIndex = (arr, x, y) => {
   idx = arr.findIndex(obj => obj.x == x && obj.y == y);
-  return idx;
-};
-
-const checkForMine = (arr, x, y) => {
-  if (arr.find(obj => obj.x == x && obj.y == y)) {
-    console.log('hit');
+  if (idx !== -1) {
+    return idx;
   } else {
-    console.log('miss');
+    return 1000;
   }
 };
 
-/* event listeners */
+const checkCells = currentCell => {
+  //console.log(cell);
+  // BASE CASE - No cells left or hits a mine
+  if (currentCell === null || currentCell.value === 'mine') {
+    console.log('base case hit');
+    return currentCell;
+  }
+  // RECURSIVE CASE - RETURNS NEXT CELL TO CHECK and we know this cell is not a mine
 
-setupForm.addEventListener('submit', initialiseGame);
+  // STEP 1 - check all surrounding cells in order to calculate the neighbours value
 
-// listening for left and right clicks on the board
-gameBoardContainer.addEventListener('click', e => {
-  handleBoardLeftClick(e);
-});
-
-gameBoardContainer.oncontextmenu = e => {
-  handleBoardRightClick(e);
+  // CHECK RIGHT
+  // CHECK DOWN
+  // CHECK LEFT
+  //nextCell =
+  //return checkCells nextCell;
 };
 
 const renderRowElements = numRows => {
@@ -192,8 +214,20 @@ const renderColumnElements = cellArr => {
   //loop the rows and add the child cell elements
   allRowDivs.forEach((currentRow, rowIdx) => {
     cellsInRows[rowIdx].forEach((currentCell, cellIdx) => {
-      currentRow.innerHTML += `<button type="button" class="col btn btn-light" data-x="${currentCell.x}" data-y="${currentCell.y}">X: ${currentCell.x} Y:${currentCell.y}</button>`;
+      currentRow.innerHTML += `<button type="button" class="col btn btn-cell" data-x="${currentCell.x}" data-y="${currentCell.y}"></button>`;
     });
   });
-  //return boardCells;
+};
+
+/* event listeners */
+
+setupForm.addEventListener('submit', initialiseGame);
+
+// listening for left and right clicks on the board
+gameBoardContainer.addEventListener('click', e => {
+  handleBoardLeftClick(e);
+});
+
+gameBoardContainer.oncontextmenu = e => {
+  handleBoardRightClick(e);
 };

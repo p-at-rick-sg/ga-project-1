@@ -2,10 +2,18 @@
   border: solid 2px red;
 }
 
-.d-table-cell {
+/* .d-table-cell {
   width: 10px;
   height: 10px;
   border: solid 1px black;
+} */
+
+.btn-cell {
+  margin: 1px;
+  padding: 0px;
+  background-color: hotpink;
+  height: 25px;
+  width: 25px;
 }
 
 legend {

@@ -97,7 +97,9 @@ const addNeighborsToMap = () => {
           if (x === centreX && y === centreY) {
             console.log('original cell');
           } else if (findCellIndex(mapArray, x, y) === 1000) {
-            console.log('index value was 1000 to this is an invalid cell');
+            console.log('index value was 1000 to this is an out of bounds cell');
+          } else if (mapArray[findCellIndex(mapArray, x, y)].value === 'mine') {
+            console.log('neighbor is a mine to ignoring also');
           } else {
             // do the checks on these cells
             console.log(`add 1 to the value of cell ${x} ${y}`);
@@ -114,7 +116,7 @@ const setDifficulty = difficulty => {
     case 'easy':
       mapWidth = mapX = 5;
       mapHeight = mapY = 5;
-      totalMines = 2; //changed back after testing the neighbor f
+      totalMines = 8; //changed back after testing the neighbor f
       break;
     case 'medium':
       mapWidth = mapX = 10;

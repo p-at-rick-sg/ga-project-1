@@ -9,9 +9,9 @@ let isWinner;
 let score;
 let timer;
 let difficulty;
-let totalMines = 10; //this will also be set at game setup - here for testing
-let mapWidth = 5; //this  and height will be set by thr user in game setup in final
-let mapHeight = 5;
+let totalMines; //this will also be set at game setup - here for testing
+let mapWidth; //this  and height will be set by thr user in game setup in final
+let mapHeight;
 let mapArray = [];
 let minesArray = [];
 let mapX = mapWidth; // use for itteration purposes only
@@ -42,7 +42,7 @@ const createMapArray = mapArr => {
   }
   //recursion cases
   if (mapY > 0) {
-    newCellObj = {x: mapX, y: mapY, mine: false, checked: false, value: null};
+    newCellObj = {x: mapX, y: mapY, value: null}; //values are null, clear, mine or adjacent mine #
     mapY -= 1;
     return createMapArray([...mapArr, newCellObj]);
   }
@@ -50,7 +50,7 @@ const createMapArray = mapArr => {
     mapY = mapWidth;
     mapX -= 1;
     //console.log(`In the NEW row loop and mapY is: ${mapY} and mapX is ${mapX}`);
-    newCellObj = {x: mapX, y: mapY, mine: false, cleared: false, adjacent: 0};
+    newCellObj = {x: mapX, y: mapY, value: null};
     mapY -= 1;
     return createMapArray([...mapArr, newCellObj]); //try reversing this to get a correctly ordered array
   }
@@ -81,6 +81,14 @@ const createMineMapCoords = minesArray => {
 
 const addMinesToMap = (mapArr, mineArr) => {
   console.log(mapArr, mineArr);
+  //get each mines coordinates
+  for (const mine of mineArr) {
+    const x = mine.x;
+    const y = mine.y;
+    // lookup the cells array idx
+    cellIdx = findCellIndex(mapArray, x, y);
+    mapArray[cellIdx].value = 'mine';
+  }
 };
 
 const setDifficulty = difficulty => {

@@ -4,18 +4,15 @@ const playButton = document.querySelector('.btn-play');
 const setupForm = document.getElementById('setupForm');
 const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
 /* state variables (initialise in function */
-let inPlay;
-let isWinner;
+let gameOver = false;
+let isWinner = null;
 let score;
 let timer;
-let difficulty;
-let totalMines; //this will also be set at game setup - here for testing
+let difficulty; //this will also be set at game setup - here for testing
 let mapWidth;
 let mapHeight;
 let mapArray = [];
 let minesArray = [];
-let mapX = mapWidth; // use for itteration purposes only
-let mapY = mapHeight;
 
 /* functions */
 
@@ -64,7 +61,6 @@ const addMinesToMap = (mapArr, mineArr) => {
   for (const mine of mineArr) {
     const x = mine.x;
     const y = mine.y;
-    //console.log(`x: ${x} y:${y}`);
     mapArray[x][y].value = 'mine';
   }
 };
@@ -74,7 +70,7 @@ const setDifficulty = difficulty => {
     case 'easy':
       mapWidth = mapX = 5;
       mapHeight = mapY = 5;
-      totalMines = 8; //changed back after testing the neighbor f
+      totalMines = 6;
       break;
     case 'medium':
       mapWidth = mapX = 10;
@@ -87,6 +83,7 @@ const setDifficulty = difficulty => {
       totalMines = 40;
       break;
   }
+  flaggedMines = totalMines;
 };
 
 /* MAIN GAME FUNCTION */
@@ -110,21 +107,62 @@ const initialiseGame = e => {
   // console.log(mapArray);
 };
 
+/* making space to work oin the recurive element only */
+
+const checkMap = (x, y) => {
+  perimterCellsArr = perimeterCells(x, y);
+  let neighborMineCount = 0;
+  for (cell of perimterCellsArr) {
+    if (mapArray[cell[0]][cell[1]].value === 'mine') neighborMineCount++;
+  }
+  //assign value to the current cell in the state variable
+  mapArray[x][y].value = neighborMineCount;
+  switch (neighborMineCount) {
+    case 1:
+      updateCell(x, y, '/img/cell-1.png');
+      break;
+    case 2:
+      updateCell(x, y, '/img/cell-2.png');
+      break;
+    case 3:
+      updateCell(x, y, '/img/cell-3.png');
+      break;
+    case 4:
+      updateCell(x, y, '/img/cell-4.png');
+      break;
+    case 5:
+      updateCell(x, y, '/img/cell-5.png');
+      break;
+    case 6:
+      updateCell(x, y, '/img/cell-6.png');
+      break;
+    default:
+      updateCell(x, y, '/img/cleared-cell.png');
+  }
+};
+
+/* END OF RECURSIVE ELEMENT WORK  */
+
+const updateCell = (x, y, image) => {
+  console.log('this function will update the board for the requested cell');
+  cellToUpdate = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+  const imgElement = cellToUpdate.children[0];
+  imgElement.src = image;
+};
+
 const handleBoardRightClick = e => {
   e.preventDefault();
   const x = e.target.parentElement.getAttribute('data-x');
   const y = e.target.parentElement.getAttribute('data-y');
   console.log(e.target.getAttribute('src'));
   if (e.target.getAttribute('src') === '/img/flag-cell.png') {
-    console.log('already a flag');
+    mapArray[x][y].flagged = false;
     e.target.src = '/img/blank-cell.png';
   } else {
+    mapArray[x][y].flagged = true;
     e.target.src = '/img/flag-cell.png';
   }
-  console.log(`x: ${x} y:${y}`);
 };
-
-//
 
 const handleBoardLeftClick = e => {
   e.preventDefault();
@@ -132,19 +170,20 @@ const handleBoardLeftClick = e => {
   const y = e.target.parentElement.getAttribute('data-y');
   //console.log(`x: ${x} y:${y}`);
   selectedCell = mapArray[x][y];
-  console.log('checking for mine in cell');
+  //do initial check for mine in this left clicked cell
   if (selectedCell.value === 'mine') {
     e.target.src = '/img/mine-cell.png';
     isWinner = false;
-    inPlay = false; // not sure I need this - work out later how to stop the game
+    gameOver = true; // not sure I need this - work out later how to stop the game
   } else {
-    checkCells(x, y);
+    // here we trigger the checkMap to check the map recursively
+    checkMap(x, y);
   }
   //checkCells(mapArray[selectedCellIdx]); // LATER
 };
 
-const checkCells = (xCoord, yCoord) => {
-  console.log(`checking perimeter cells of ${xCoord}, ${yCoord}`);
+const perimeterCells = (xCoord, yCoord) => {
+  //console.log(`checking perimeter cells of ${xCoord}, ${yCoord}`);
   const x = Number(xCoord);
   const y = Number(yCoord);
   const permiterCellsArr = [
@@ -160,13 +199,13 @@ const checkCells = (xCoord, yCoord) => {
   const filteredPerimeterCells = [];
   for (arr of permiterCellsArr) {
     if (arr[0] < 0 || arr[1] < 0 || arr[0] > mapWidth - 1 || arr[1] > mapHeight - 1) {
-      console.log(`Cell is out of bounds ${arr}`);
+      //console.log(`Cell is out of bounds ${arr}`);
       continue;
     } else {
       filteredPerimeterCells.push(arr);
     }
   }
-  console.log(filteredPerimeterCells);
+  return filteredPerimeterCells;
 };
 
 const renderRowElements = numRows => {
@@ -188,8 +227,6 @@ const renderColumnElements = cellArr => {
     }
   }
 };
-
-// `<button type="button" class="col btn btn-cell" data-x="${row}" data-y="${cell}" >${row}, ${cell}</button>`;
 
 /* event listeners */
 

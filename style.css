@@ -34,3 +34,15 @@ legend {
 .notification {
   display: none;
 }
+
+.mine-counter {
+  display: inline;
+  font-size: 20px;
+  color: blue;
+}
+
+.game-timer {
+  display: inline;
+  font-size: 20px;
+  color: red;
+}

@@ -112,34 +112,61 @@ const initialiseGame = e => {
 
 const handleBoardRightClick = e => {
   e.preventDefault();
-  const x = e.target.getAttribute('data-x');
-  const y = e.target.getAttribute('data-y');
+  const x = e.target.parentElement.getAttribute('data-x');
+  const y = e.target.parentElement.getAttribute('data-y');
+  console.log(e.target.getAttribute('src'));
+  if (e.target.getAttribute('src') === '/img/flag-cell.png') {
+    console.log('already a flag');
+    e.target.src = '/img/blank-cell.png';
+  } else {
+    e.target.src = '/img/flag-cell.png';
+  }
   console.log(`x: ${x} y:${y}`);
 };
 
+//
+
 const handleBoardLeftClick = e => {
   e.preventDefault();
-  const x = e.target.getAttribute('data-x');
-  const y = e.target.getAttribute('data-y');
+  const x = e.target.parentElement.getAttribute('data-x');
+  const y = e.target.parentElement.getAttribute('data-y');
   //console.log(`x: ${x} y:${y}`);
-  // get this for the update of the state array
-  selectedCellIdx = findCellIndex(mapArray, x, y);
-  //check if the cell is a mine if yes - set isWinner to false
-  checkCells(mapArray[selectedCellIdx]); // LATER
-};
-
-// func to find the index of a cell in the array using x,y coords
-const findCellIndex = (arr, x, y) => {
-  idx = arr.findIndex(obj => obj.x == x && obj.y == y);
-  if (idx !== -1) {
-    return idx;
+  selectedCell = mapArray[x][y];
+  console.log('checking for mine in cell');
+  if (selectedCell.value === 'mine') {
+    e.target.src = '/img/mine-cell.png';
+    isWinner = false;
+    inPlay = false; // not sure I need this - work out later how to stop the game
   } else {
-    return 1000;
+    checkCells(x, y);
   }
+  //checkCells(mapArray[selectedCellIdx]); // LATER
 };
 
-const checkCells = currentCell => {
-  console.log('checking cells function fired');
+const checkCells = (xCoord, yCoord) => {
+  console.log(`checking perimeter cells of ${xCoord}, ${yCoord}`);
+  const x = Number(xCoord);
+  const y = Number(yCoord);
+  const permiterCellsArr = [
+    [x - 1, y - 1],
+    [x - 1, y],
+    [x - 1, y + 1],
+    [x, y - 1],
+    [x, y + 1],
+    [x + 1, y - 1],
+    [x + 1, y],
+    [x + 1, y + 1],
+  ];
+  const filteredPerimeterCells = [];
+  for (arr of permiterCellsArr) {
+    if (arr[0] < 0 || arr[1] < 0 || arr[0] > mapWidth - 1 || arr[1] > mapHeight - 1) {
+      console.log(`Cell is out of bounds ${arr}`);
+      continue;
+    } else {
+      filteredPerimeterCells.push(arr);
+    }
+  }
+  console.log(filteredPerimeterCells);
 };
 
 const renderRowElements = numRows => {
@@ -154,11 +181,15 @@ const renderColumnElements = cellArr => {
   //loop the rows and add the child cell elements
   for (row in allRowDivs) {
     for (cell in cellArr[row]) {
-      console.log(`row idx: ${row} and cell idx: ${cell}`);
-      allRowDivs[row].innerHTML += `<button type="button" class="col btn btn-cell" >CELL</button>`;
+      //console.log(`row idx: ${row} and cell idx: ${cell}`);
+      allRowDivs[
+        row
+      ].innerHTML += `<button type="button" class="col btn btn-cell" data-x="${row}" data-y="${cell}" ><img src="/img/blank-cell.png" /></button>`;
     }
   }
 };
+
+// `<button type="button" class="col btn btn-cell" data-x="${row}" data-y="${cell}" >${row}, ${cell}</button>`;
 
 /* event listeners */
 

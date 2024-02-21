@@ -9,6 +9,16 @@
 } */
 
 .btn-cell {
+  font-size: 8px;
+  margin: 1px;
+  padding: 0px;
+  background-color: hotpink;
+  height: 25px;
+  width: 25px;
+}
+
+.div-cell {
+  font-size: 8px;
   margin: 1px;
   padding: 0px;
   background-color: hotpink;

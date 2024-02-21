@@ -109,45 +109,58 @@ const initialiseGame = e => {
 
 /* making space to work oin the recurive element only */
 
-const checkMap = (x, y) => {
-  perimterCellsArr = perimeterCells(x, y);
+const checkMap = cellArr => {
+  perimterCellsArr = perimeterCells(cellArr);
+  //BASE CASE - ONLY CLEARED NEIGHBORS/MINES
+  let baseCheck = 0;
+  for (cell of perimterCellsArr) {
+    if (mapArray[cell[0]][cell[1]].value !== null) {
+      baseCheck += 1;
+    }
+  }
+
+  if (baseCheck === perimterCellsArr.length) return;
+
   let neighborMineCount = 0;
   for (cell of perimterCellsArr) {
     if (mapArray[cell[0]][cell[1]].value === 'mine') neighborMineCount++;
   }
-  //assign value to the current cell in the state variable
-  mapArray[x][y].value = neighborMineCount;
-  switch (neighborMineCount) {
-    case 1:
-      updateCell(x, y, '/img/cell-1.png');
-      break;
-    case 2:
-      updateCell(x, y, '/img/cell-2.png');
-      break;
-    case 3:
-      updateCell(x, y, '/img/cell-3.png');
-      break;
-    case 4:
-      updateCell(x, y, '/img/cell-4.png');
-      break;
-    case 5:
-      updateCell(x, y, '/img/cell-5.png');
-      break;
-    case 6:
-      updateCell(x, y, '/img/cell-6.png');
-      break;
-    default:
-      updateCell(x, y, '/img/cleared-cell.png');
-  }
+
+  //RECURSIVE CASE
+  //assign value to the current cell in the state variable and call the update on the UI
+  mapArray[cellArr[0]][cellArr[1]].value = neighborMineCount;
+  updateCell(cellArr[0], cellArr[1], neighborMineCount);
 };
 
 /* END OF RECURSIVE ELEMENT WORK  */
 
-const updateCell = (x, y, image) => {
+const updateCell = (x, y, option) => {
   console.log('this function will update the board for the requested cell');
   cellToUpdate = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
   const imgElement = cellToUpdate.children[0];
-  imgElement.src = image;
+
+  switch (option) {
+    case 1:
+      imgElement.src = '/img/cell-1.png';
+      break;
+    case 2:
+      imgElement.src = '/img/cell-2.png';
+      break;
+    case 3:
+      imgElement.src = '/img/cell-3.png';
+      break;
+    case 4:
+      imgElement.src = '/img/cell-4.png';
+      break;
+    case 5:
+      imgElement.src = '/img/cell-5.png';
+      break;
+    case 6:
+      imgElement.src = '/img/cell-6.png';
+      break;
+    default:
+      imgElement.src = '/img/cleared-cell.png';
+  }
 };
 
 const handleBoardRightClick = e => {
@@ -176,16 +189,17 @@ const handleBoardLeftClick = e => {
     isWinner = false;
     gameOver = true; // not sure I need this - work out later how to stop the game
   } else {
-    // here we trigger the checkMap to check the map recursively
-    checkMap(x, y);
+    // here we trigger the checkMap to check the map recursively - update to call with a 2 element array for x, y
+    const cellArr = [x, y];
+    checkMap(cellArr);
   }
   //checkCells(mapArray[selectedCellIdx]); // LATER
 };
 
-const perimeterCells = (xCoord, yCoord) => {
+const perimeterCells = cellArr => {
   //console.log(`checking perimeter cells of ${xCoord}, ${yCoord}`);
-  const x = Number(xCoord);
-  const y = Number(yCoord);
+  const x = Number(cellArr[0]);
+  const y = Number(cellArr[1]);
   const permiterCellsArr = [
     [x - 1, y - 1],
     [x - 1, y],

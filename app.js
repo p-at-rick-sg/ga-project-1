@@ -31,7 +31,7 @@ const createMapArray = width => {
   }
   for (row in mapArray) {
     for (cell in mapArray) {
-      mapArray[row][cell] = {flagged: false, value: 'unchecked'};
+      mapArray[row][cell] = {flagged: false, checked: 0, value: null};
     }
   }
   return mapArray;
@@ -113,42 +113,32 @@ const initialiseGame = e => {
 /* making space to work on the recurive element only */
 
 const checkMap = cellArr => {
-  console.log(`currently checking cell: ${cellArr}`);
-  if (cellArr === undefined) {
-    console.log('hit the base case - undefined value was passed in');
-    return cellArr;
+  perimeterCellsArr = perimeterCells(cellArr);
+  const neighborsMineCnt = checkPerimeterMines(perimeterCellsArr, cellArr);
+  if (neighborsMineCnt === 0) {
+    console.log('the checked cell is so we continue after setting the cell to 0 and checked');
+    for (cell of perimeterCellsArr) {
+      checkPerimeterMines(perimeterCellsArr, cell);
+    }
   }
-  perimterCellsArr = perimeterCells(cellArr);
+};
 
-  //RECURSIVE CASE
+/* END OF RECURSIVE ELEMENT WORK  */
+
+const checkPerimeterMines = (cellsArr, currentCell) => {
   let neighborMineCount = 0;
-  for (cell of perimterCellsArr) {
+  console.log('cellsArr in the checkpermiter func' + cellsArr);
+  for (cell of cellsArr) {
+    console.log();
     if (mapArray[cell[0]][cell[1]].value === 'mine') {
       neighborMineCount++;
       console.log(`cell: ${cell} was logged as a mine`);
     }
   }
-  //assign value to the current cell in the state variable and call the update on the UI
-  mapArray[cellArr[0]][cellArr[1]].value = neighborMineCount;
-  updateCell(cellArr[0], cellArr[1], neighborMineCount);
-
-  // pass one of the undefined perimters cellsback to the function
-  // need to get an accurate filtered array of perimter cells that are unchecked
-  const uncheckedArr = [];
-  for (cell of perimterCellsArr) {
-    if (mapArray[cell[0]][cell[1]].value === 'unchecked') {
-      uncheckedArr.push(cell);
-    }
-  }
-  if (uncheckedArr.length === 0) {
-    return checkMap(undefined);
-  } else {
-    const randIdx = Math.floor(Math.random() * uncheckedArr.length);
-    return checkMap(uncheckedArr[randIdx]);
-  }
+  mapArray[currentCell[0]][currentCell[1]].value = neighborMineCount;
+  updateCell(currentCell[0], currentCell[1], neighborMineCount);
+  return neighborMineCount;
 };
-
-/* END OF RECURSIVE ELEMENT WORK  */
 
 const updateCell = (x, y, option) => {
   cellToUpdate = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
@@ -218,7 +208,7 @@ const handleBoardLeftClick = e => {
 };
 
 const perimeterCells = cellArr => {
-  //console.log(`checking perimeter cells of ${xCoord}, ${yCoord}`);
+  //checking for all valid cells (not OOB) we need mines as we need to count them
   const x = Number(cellArr[0]);
   const y = Number(cellArr[1]);
   const permiterCellsArr = [

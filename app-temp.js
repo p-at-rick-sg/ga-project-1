@@ -36,3 +36,48 @@ const addNeighborsToMap = () => {
     }
   });
 };
+
+const checkMap = cellArr => {
+  console.log(`currently checking cell: ${cellArr}`);
+  if (cellArr === undefined) {
+    console.log('hit the base case - undefined value was passed in');
+    return; // Stop the recursion if undefined is passed in
+  }
+
+  perimeterCellsArr = perimeterCells(cellArr);
+  let neighborMineCount = 0;
+
+  for (cell of perimterCellsArr) {
+    if (mapArray[cell[0]][cell[1]].value === 'mine') {
+      neighborMineCount++;
+      console.log(`cell: ${cell} was logged as a mine`);
+    }
+  }
+
+  mapArray[cellArr[0]][cellArr[1]].value = neighborMineCount;
+  updateCell(cellArr[0], cellArr[1], neighborMineCount);
+
+  const uncheckedArr = [];
+  let stopChecking = false; // Flag to indicate if we should stop checking
+
+  for (cell of perimterCellsArr) {
+    if (mapArray[cell[0]][cell[1]].value === 'unchecked') {
+      uncheckedArr.push(cell);
+      if (isNumber(mapArray[cell[0]][cell[1]].value)) {
+        stopChecking = true; // Stop checking if we encounter a numbered cell
+      }
+    }
+  }
+
+  if (uncheckedArr.length === 0 || stopChecking) {
+    return; // Stop the recursion if no unchecked cells are found or we encounter a numbered cell
+  } else {
+    const randIdx = Math.floor(Math.random() * uncheckedArr.length);
+    return checkMap(uncheckedArr[randIdx]);
+  }
+};
+
+// Function to check if a value is a number
+const isNumber = value => {
+  return !isNaN(parseFloat(value)) && isFinite(value);
+};

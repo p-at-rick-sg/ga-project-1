@@ -81,3 +81,46 @@ const checkMap = cellArr => {
 const isNumber = value => {
   return !isNaN(parseFloat(value)) && isFinite(value);
 };
+
+
+-----------
+
+function RevealNearbyTiles(y,x){
+
+  var cordsx;                     //cordsx and cordsy represent the adjacent tiles of the coordinates (the parameters).
+  var cordsy;                             
+  var coordinates; 
+  for(i=-1; i<2; i++){   //for every adjacent tile:
+      for(j=-1;j<2;j++){
+          cordsx = x;
+          cordsy = y;
+          if(i === 0 && j === 0){    
+              continue;
+          }
+          else{
+              cordsx += j; 
+              cordsy += i;
+              //if this ^ offset is within the grid:
+              if((cordsx >= 0 && cordsx < 10) && (cordsy >= 0 && cordsy < 10)){
+                  //the coordinates of the tile.
+                  coordinates = $("#mstable tr:nth-of-type("+(cordsy+1)+") td:nth-of-type("+(cordsx+1)+") .tiles");
+                  //if it has not been revealed
+                  if(coordinates.parent().attr("data-revealed") === "false"){
+                      //reveal this coordinate.   
+                      coordinates.empty().append("<p id='number'>"+coordinates.parent().attr("data-value")+"</p>");                           
+                      coordinates.parent().attr("data-revealed", "true");
+                      //if this coordinate is 0
+                      if(coordinates.parent().attr("data-value") === " "){
+                          //reveal this coordiantes' nerabytiles
+                          RevealNearbyTiles(cordsy,cordsx);
+                      }
+
+                  }       
+              }
+          }  
+      }
+  }
+
+
+  updateCellUI(currentCell[0], currentCell[1], neighborMineCount);
+  updateCellState(currentCell[0], currentCell[1], neighborMineCount);

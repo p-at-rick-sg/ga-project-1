@@ -8,7 +8,7 @@ let gameOver = false;
 let isWinner = null;
 let score;
 let timer;
-let difficulty; //this will also be set at game setup - here for testing
+let difficulty;
 let mapWidth;
 let mapHeight;
 let mapArray = [];
@@ -16,7 +16,7 @@ let minesArray = [];
 
 /* functions */
 
-// TODO setup database connection and object for high scores
+// TODO setup local file to store high scores
 
 const clearBoard = () => {
   mapArray.length = 0;
@@ -112,14 +112,17 @@ const tmpZeroCells = []; //testing with this outside
 
 const floodRecursion = cellArr => {
   console.log('the flooding recursive function start line');
-  // BASE CASE - ALL NEIGHBOURS ARE CHECKED (and maybe we end up back at the start?)
 
+  // BASE CASE - ALL NEIGHBOURS ARE CHECKED (and maybe we end up back at the start?)
+  if (cellArr === undefined) {
+    console.log('hit the base case');
+    return 0;
+  }
   const perimeterCellsArr = checkForPerimeterCells(cellArr);
   console.log('unchecked vaid perimeter cells: ' + perimeterCellsArr);
   for (cell of perimeterCellsArr) {
   }
   //check each unchecked perimeter cell for value
-
   perimeterCellsArr.forEach(cell => {
     [x, y] = cell;
     //we get the valid perimeter cells for the perimeter cell
@@ -139,7 +142,7 @@ const floodRecursion = cellArr => {
       tmpZeroCells.push(cell);
     }
   });
-  //now I need to call the recursion again with a value from the tmpZeroCells array
+  //now I need to call the recursion again with a value from the tmpZeroCells array which sits outside in order to track properly
   const nextCell = tmpZeroCells.pop();
   floodRecursion(nextCell);
 };
@@ -195,35 +198,35 @@ const updateCellUI = (x, y, option) => {
   switch (option) {
     case 1:
       imgElement.src = '/img/cell-1.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     case 2:
       imgElement.src = '/img/cell-2.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     case 3:
       imgElement.src = '/img/cell-3.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     case 4:
       imgElement.src = '/img/cell-4.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     case 5:
       imgElement.src = '/img/cell-5.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     case 6:
       imgElement.src = '/img/cell-6.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     case 'mine':
       imgElement.src = '/img/mine-cell.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
       break;
     default:
       imgElement.src = '/img/cleared-cell.png';
-      mapArray[x][y].checked = true;
+      cellToUpdate.disabled = true;
   }
 };
 

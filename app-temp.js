@@ -124,3 +124,5 @@ function RevealNearbyTiles(y,x){
 
   updateCellUI(currentCell[0], currentCell[1], neighborMineCount);
   updateCellState(currentCell[0], currentCell[1], neighborMineCount);
+
+  //before changing the buttons to divs

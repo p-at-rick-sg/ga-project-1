@@ -3,12 +3,18 @@ const gameBoardContainer = document.querySelector('.game-board-container');
 const playButton = document.querySelector('.btn-play');
 const setupForm = document.getElementById('setupForm');
 const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
-/* state variables (initialise in function */
+const resultAlert = document.querySelector('.alert');
+const resultScore = document.querySelector('.score');
+const resultWinner = document.querySelector('.winner');
+const mineCounter = document.querySelector('.mine-counter');
+const allContentDiv = document.querySelector('.all-content');
+
+/* state variables */
 let gameOver = false;
-let isWinner = null;
 let score;
 let timer;
 let difficulty;
+let flaggedMines = 0;
 let mapWidth;
 let mapHeight;
 let mapArray = [];
@@ -74,19 +80,21 @@ const setDifficulty = difficulty => {
       mapWidth = mapX = 5;
       mapHeight = mapY = 5;
       totalMines = 6;
+      gameBoardContainer.style.width = '130px';
       break;
     case 'medium':
       mapWidth = mapX = 10;
       mapHeight = mapY = 10;
       totalMines = 20;
+      gameBoardContainer.style.width = '254px';
       break;
     case 'hard':
       mapWidth = mapX = 20;
       mapHeight = mapY = 20;
       totalMines = 40;
+      gameBoardContainer.style.width = '504px';
       break;
   }
-  flaggedMines = totalMines;
 };
 
 /* MAIN GAME FUNCTION */
@@ -100,6 +108,7 @@ const initialiseGame = e => {
   }
   e.preventDefault();
   setDifficulty(difficulty);
+  updateFlagCounter(0);
   // create the boad and render it
   mapArray = createMapArray(mapWidth);
   minesArray = createMines([]);
@@ -108,8 +117,7 @@ const initialiseGame = e => {
   renderColumnElements(mapArray);
 };
 
-const tmpZeroCells = []; //testing with this outside
-
+const tmpZeroCells = []; //testing with this outside is working - maybe can work out how top retuirn this with the cell values instead as it would be neater
 const floodRecursion = cellArr => {
   console.log('the flooding recursive function start line');
 
@@ -268,6 +276,12 @@ const updateCellState = (x, y, option) => {
   }
 };
 
+const updateFlagCounter = (flagged, total = 6) => {
+  console.log('flag counter func running');
+  //calculate the number of mines flagged
+  mineCounter.innerText = `${flagged} of ${totalMines} mines Flagged`;
+};
+
 const handleBoardRightClick = e => {
   e.preventDefault();
   const x = e.target.parentElement.getAttribute('data-x');
@@ -275,10 +289,13 @@ const handleBoardRightClick = e => {
   if (e.target.getAttribute('src') === '/img/flag-cell.png') {
     mapArray[x][y].flagged = false;
     e.target.src = '/img/blank-cell.png';
+    flaggedMines--;
   } else {
     mapArray[x][y].flagged = true;
     e.target.src = '/img/flag-cell.png';
+    flaggedMines++;
   }
+  updateFlagCounter(flaggedMines);
 };
 
 const handleBoardLeftClick = e => {
@@ -294,8 +311,7 @@ const handleBoardLeftClick = e => {
       updateCellUI(cell.x, cell.y, 'mine');
     }
     isWinner = false;
-    gameOver = true; // not sure I need this - work out later how to stop the game
-    console.log('the game should break after this and display the notification div');
+    handleGameOver(isWinner, 100); //will add score here later if I have time
     return 0;
   }
   // check if the cell is a number and then return to the game
@@ -329,9 +345,28 @@ const renderColumnElements = cellArr => {
     for (cell in cellArr[row]) {
       allRowDivs[
         row
-      ].innerHTML += `<button type="button" class="col btn btn-cell" data-x="${row}" data-y="${cell}" ><img src="/img/blank-cell.png" /></button>`;
+      ].innerHTML += `<div class="col btn-cell" data-x="${row}" data-y="${cell}"><img src="/img/blank-cell.png"></div>`;
     }
   }
+};
+
+// <div class="col btn-cell" data-x="${row}" data-y="${cell}><img src="/img/blank-cell.png"></div>
+
+const handleGameOver = (winner, score) => {
+  let winText = '';
+  if (winner === true) {
+    winText = 'WINNER';
+  } else {
+    winText = 'LOSER';
+  }
+  console.log(winText);
+  resultAlert.innerText = `You are a: ${winText} this time`;
+  resultAlert.style.display = 'block';
+  setTimeout(() => {
+    console.log('Delayed for 5 seconds.');
+    resultAlert.style.display = 'none';
+    clearBoard();
+  }, '5000');
 };
 
 /* event listeners */

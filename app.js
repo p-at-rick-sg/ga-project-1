@@ -280,6 +280,13 @@ const updateFlagCounter = (flagged, total = 6) => {
   console.log('flag counter func running');
   //calculate the number of mines flagged
   mineCounter.innerText = `${flagged} of ${totalMines} mines Flagged`;
+  if (flaggedMines > totalMines) {
+    mineCounter.style.color = 'red';
+    mineCounter.style.fontWeight = 'bold';
+  } else {
+    mineCounter.style.color = 'darkGrey';
+    mineCounter.style.fontWeight = 'normal';
+  }
 };
 
 const handleBoardRightClick = e => {
@@ -359,12 +366,13 @@ const handleGameOver = (winner, score) => {
   } else {
     winText = 'LOSER';
   }
-  console.log(winText);
-  resultAlert.innerText = `You are a: ${winText} this time`;
+  resultAlert.innerText = `You are a: ${winText} this time. Your Score Was: `;
   resultAlert.style.display = 'block';
+  playButton.disabled = true;
   setTimeout(() => {
     console.log('Delayed for 5 seconds.');
     resultAlert.style.display = 'none';
+    playButton.disabled = false;
     clearBoard();
   }, '5000');
 };

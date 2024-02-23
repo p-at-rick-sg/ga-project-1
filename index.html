@@ -27,10 +27,10 @@
     <div class="container all-content">
       <div class="d-grid gap-3" style="grid-template-columns: 1fr 2fr 1fr">
         <div class="bg-body-tertiary border rounded-3 game-settings">
-          <h1>Game Settings</h1>
+          <h2>Game Settings</h2>
 
-          <form id="setupForm">
-            <fieldset>
+          <form id="setup-form">
+            <fieldset class="set-diff">
               <legend>Select Difficulty:</legend>
               <div>
                 <input type="radio" id="easy" name="difficulty" value="easy" checked required />
@@ -48,6 +48,18 @@
               </div>
             </fieldset>
 
+            <div>
+              <legend>Set Timer</legend>
+              <h3 class="slider-display"></h3>
+              <input
+                type="range"
+                min="30"
+                max="1000"
+                value="120"
+                class="time-slider"
+                id="time-slider" />
+            </div>
+
             <button type="submit" class="btn btn-primary btn-play">Play now</button>
           </form>
         </div>
@@ -57,17 +69,22 @@
             <div class="row row-cols-md-3">
               <div class="col-md-4 border mine-counter">Flagged</div>
               <div class="col-md-4"></div>
-              <div class="col-md-4 border game-timer">01:00</div>
+              <div class="col-md-4 border game-timer">00:00</div>
             </div>
           </div>
           <div class="container game-board-container"></div>
         </div>
 
         <div class="bg-body-tertiary border rounded-3 leaderboard">
-          <h1>Leader Board</h1>
+          <h2>My Top Scores</h2>
+          <table class="table table-light score-table">
+            </tr>
+          </table>
         </div>
       </div>
     </div>
+    <script src="model.js"></script>
+    <script src="ui.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

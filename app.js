@@ -1,53 +1,37 @@
 /* constants */
 const gameBoardContainer = document.querySelector('.game-board-container');
 const playButton = document.querySelector('.btn-play');
-const setupForm = document.getElementById('setupForm');
+const setupForm = document.getElementById('setup-form');
 const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
 const resultAlert = document.querySelector('.alert');
 const resultScore = document.querySelector('.score');
 const resultWinner = document.querySelector('.winner');
 const mineCounter = document.querySelector('.mine-counter');
 const allContentDiv = document.querySelector('.all-content');
+const timeDisplay = document.querySelector('.game-timer');
+const timeSlider = document.getElementById('time-slider');
+const sliderDisplay = document.querySelector('.slider-display');
+const diffDiv = document.querySelector('.set-diff');
 
 /* state variables */
 let gameOver = false;
-let score;
-let timer;
+let isWinner = null;
+let score = 0;
 let difficulty;
 let flaggedMines = 0;
 let mapWidth;
 let mapHeight;
 let mapArray = [];
 let minesArray = [];
+let timer;
+const defaultTimers = [60, 180, 300];
 
 /* functions */
 
-// TODO setup local file to store high scores
-
-const clearBoard = () => {
-  mapArray.length = 0;
-  gameBoardContainer.innerHTML = '';
-  return 0;
-};
-
-const createMapArray = width => {
-  //creating with 2 layer array instead of more complex objects
-  for (let xElement = 0; xElement < width; xElement++) {
-    mapArray.push([]);
-  }
-  for (row in mapArray) {
-    for (cell in mapArray) {
-      mapArray[row][cell] = {flagged: false, checked: false, value: null};
-    }
-  }
-  return mapArray;
-};
-
 const createMines = minesArray => {
-  const mineCount = minesArray.length ?? 0; // checking for the  initial case to we don't break on startup
+  const mineCount = minesArray.length ?? 0;
   // Base case
   if (minesArray.length === totalMines) {
-    console.log(minesArray);
     return minesArray;
   }
   // recursion case
@@ -97,18 +81,42 @@ const setDifficulty = difficulty => {
   }
 };
 
-/* MAIN GAME FUNCTION */
+const getDifficulty = () => {
+  for (const radioButton of difficultyRadios) {
+    if (radioButton.checked) {
+      switch (radioButton.value) {
+        case 'easy':
+          timeSlider.value = defaultTimers[0];
+          sliderDisplay.innerText = defaultTimers[0];
+          break;
+        case 'medium':
+          timeSlider.value = defaultTimers[1];
+          sliderDisplay.innerText = defaultTimers[1];
+          break;
+        case 'hard':
+          timeSlider.value = defaultTimers[2];
+          sliderDisplay.innerText = defaultTimers[2];
+          break;
+      }
+    }
+  }
+};
+
+/* MAIN GAME FUNCTIONALITY */
 const initialiseGame = e => {
   clearBoard();
+  gameBoardContainer.style = 'pointer-events: auto';
   for (const radioButton of difficultyRadios) {
     if (radioButton.checked) {
       difficulty = radioButton.value;
       break;
     }
   }
+  timer = timeSlider.value;
   e.preventDefault();
   setDifficulty(difficulty);
   updateFlagCounter(0);
+  startTimer();
   // create the boad and render it
   mapArray = createMapArray(mapWidth);
   minesArray = createMines([]);
@@ -116,6 +124,21 @@ const initialiseGame = e => {
   renderRowElements(mapHeight);
   renderColumnElements(mapArray);
 };
+
+const startTimer = () => {
+  stopWatch = setInterval(() => {
+    timer--;
+    if (timer <= 0) {
+      clearInterval(stopWatch);
+      handleGameOver(false, 0);
+    }
+    const secs = timer % 60;
+    const mins = Math.floor(timer / 60);
+    timeDisplay.innerText = `${mins}:${secs}`;
+  }, 1000);
+};
+
+//to clear use clearInterval(updateTimer)
 
 const tmpZeroCells = []; //testing with this outside is working - maybe can work out how top retuirn this with the cell values instead as it would be neater
 const floodRecursion = cellArr => {
@@ -277,9 +300,8 @@ const updateCellState = (x, y, option) => {
 };
 
 const updateFlagCounter = (flagged, total = 6) => {
-  console.log('flag counter func running');
   //calculate the number of mines flagged
-  mineCounter.innerText = `${flagged} of ${totalMines} mines Flagged`;
+  mineCounter.innerText = `${flagged} of ${totalMines} Mines`;
   if (flaggedMines > totalMines) {
     mineCounter.style.color = 'red';
     mineCounter.style.fontWeight = 'bold';
@@ -303,6 +325,8 @@ const handleBoardRightClick = e => {
     flaggedMines++;
   }
   updateFlagCounter(flaggedMines);
+  const hasWon = checkForWin();
+  if (hasWon) handleGameOver(hasWon, timer);
 };
 
 const handleBoardLeftClick = e => {
@@ -318,7 +342,7 @@ const handleBoardLeftClick = e => {
       updateCellUI(cell.x, cell.y, 'mine');
     }
     isWinner = false;
-    handleGameOver(isWinner, 100); //will add score here later if I have time
+    handleGameOver(isWinner, timer);
     return 0;
   }
   // check if the cell is a number and then return to the game
@@ -326,16 +350,33 @@ const handleBoardLeftClick = e => {
   perimeterCellsArr = checkForPerimeterCells(cellArr);
   const cellValue = checkPerimeterMineValue(perimeterCellsArr, cellArr);
   //if the value is in the range 1-9 then reveal the cell and exit
-  if ([1, 2, 3, 4, 5, 6, 7, 8, 9].includes(cellValue)) {
+  if ([1, 2, 3, 4, 5, 6, 7, 8].includes(cellValue)) {
     updateCellState(x, y, cellValue);
     updateCellUI(x, y, cellValue);
-    return 0;
   } else if (cellValue === 0) {
     // set the cell state and UI then call the recursive function
     updateCellState(x, y, cellValue);
     updateCellUI(x, y, cellValue);
     floodRecursion(cellArr);
   }
+  //check for win status
+  const hasWon = checkForWin();
+  if (hasWon) handleGameOver(hasWon, timer);
+};
+
+const checkForWin = () => {
+  console.log('checking if winner');
+  const flatArray = [].concat(...mapArray);
+  console.log(flatArray);
+  winCheck1 = flatArray.filter(cell => {
+    return cell.value === 'mine' && cell.flagged === true;
+  });
+  console.log(winCheck1);
+  winCheck2 = flatArray.filter(cell => {
+    return cell.checked === true;
+  });
+  winCheck1.length + winCheck2.length === flatArray.length ? (win = true) : (win = false);
+  return win; //flatten the array, check that all mines are flagged, then check that all other cells are checked
 };
 
 const renderRowElements = numRows => {
@@ -357,18 +398,28 @@ const renderColumnElements = cellArr => {
   }
 };
 
-// <div class="col btn-cell" data-x="${row}" data-y="${cell}><img src="/img/blank-cell.png"></div>
+sliderDisplay.innerText = timeSlider.value;
+timeSlider.oninput = function () {
+  sliderDisplay.innerText = this.value;
+};
 
-const handleGameOver = (winner, score) => {
+const handleGameOver = (winner, remainingTime) => {
+  clearInterval(stopWatch);
+  gameBoardContainer.style = 'pointer-events: none';
+  if (winner) {
+    score = calculateScore(remainingTime);
+  } else score = 0;
   let winText = '';
   if (winner === true) {
     winText = 'WINNER';
   } else {
     winText = 'LOSER';
   }
-  resultAlert.innerText = `You are a: ${winText} this time. Your Score Was: `;
+  resultAlert.innerText = `You are a: ${winText} this time. Your Score Was: ${score}`;
   resultAlert.style.display = 'block';
   playButton.disabled = true;
+  saveScore(score);
+  //do the local storage score thing here
   setTimeout(() => {
     console.log('Delayed for 5 seconds.');
     resultAlert.style.display = 'none';
@@ -377,7 +428,25 @@ const handleGameOver = (winner, score) => {
   }, '5000');
 };
 
+const calculateScore = remainingTm => {
+  return totalMines * remainingTm;
+};
+
+const saveScore = currScore => {
+  let scoreArray = [];
+  if (localStorage.getItem('msScores') !== null) {
+    console.log('found scores and pulling then');
+    let strScores = localStorage.getItem('msScores');
+    scoreArray = JSON.parse(strScores);
+  }
+  scoreArray.push(currScore);
+  scoreArray.sort((a, b) => b - a);
+  let strNewScores = JSON.stringify(scoreArray);
+  localStorage.setItem('msScores', strNewScores);
+};
 /* event listeners */
+
+diffDiv.addEventListener('click', getDifficulty);
 
 setupForm.addEventListener('submit', initialiseGame);
 

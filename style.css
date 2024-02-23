@@ -3,6 +3,10 @@
   width: 130px;
 }
 
+.game-settings {
+  text-align: center;
+}
+
 .btn-cell {
   font-size: 8px;
   margin: 0px;
@@ -31,6 +35,10 @@ legend {
   color: darkgray;
 }
 
+label {
+  color: rgba(0, 26, 77, 0.8);
+}
+
 .mine-counter {
   font-size: 16px;
   color: blue;
@@ -43,4 +51,32 @@ legend {
 
 .alert {
   display: none;
+}
+
+.btn-play {
+  margin: 20px;
+}
+.set-diff {
+  margin: 20px;
+}
+
+#setupForm {
+}
+
+h2 {
+  text-align: center;
+  background-color: darkgray;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  color: white;
+  padding: 5px;
+  border-bottom: 2px solid rgb(32, 30, 30);
+}
+.slider-display {
+  color: rgba(0, 26, 77, 0.7);
+}
+
+.score-table {
+  text-align: center;
+  border: solid 1px rgba(0, 26, 77, 0.7);
 }

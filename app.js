@@ -217,6 +217,7 @@ const handleGameOver = (winner, remainingTime) => {
   resultAlert.style.display = 'block';
   playButton.disabled = true;
   saveScore(score);
+  setDifficulty(difficulty);
   //do the local storage score thing here
   setTimeout(() => {
     resultAlert.style.display = 'none';

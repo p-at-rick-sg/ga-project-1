@@ -17,7 +17,7 @@ the player loses. Player wins by marking all mines and clearing all non-mine gri
 
 **Screenshot(s):**
 
-![Minesweeper Screenshot](game-start.png 'Minesweeper Screenshot')
+![Minesweeper Screenshot](/documentation/game-start.png 'Minesweeper Screenshot')
 ![Minesweeper Flooded Cells](flooded-cells.png 'Minesweeper Screenshot')
 ![Minesweeper Flooded Cells](losing-screen.png 'Minesweeper Screenshot')
 

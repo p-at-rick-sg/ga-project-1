@@ -5,7 +5,9 @@ Project 1 for GA SEI Intake
 Deliverables:
 
 - Completed code that works and meets the requirements
-- README.md File (here) **Game: Minesweeper**
+- README.md File (you are in it already)
+- Link to the published game: https://https://minesweeper.rick.sg/
+- **Game: Minesweeper**
 
 _Background_ Minesweeper was first implemented in Windows 95. The game consists of a grid of squares
 that have random mines concealed. The players objective is to mark the mines and clear the ones that

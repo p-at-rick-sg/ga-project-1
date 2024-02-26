@@ -18,8 +18,8 @@ the player loses. Player wins by marking all mines and clearing all non-mine gri
 **Screenshot(s):**
 
 ![Minesweeper Screenshot](/documentation/game-start.png 'Minesweeper Screenshot')
-![Minesweeper Flooded Cells](flooded-cells.png 'Minesweeper Screenshot')
-![Minesweeper Flooded Cells](losing-screen.png 'Minesweeper Screenshot')
+![Minesweeper Flooded Cells](/documentation/flooded-cells.png 'Minesweeper Screenshot')
+![Minesweeper Flooded Cells](/documentation/losing-screen.png 'Minesweeper Screenshot')
 
 **Technologies Used**: The game is built purely in HTML, Javascript and CSS. I imported the
 bootstrap CSS library for some basic styling

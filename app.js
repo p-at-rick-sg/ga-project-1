@@ -140,14 +140,17 @@ const handleBoardRightClick = e => {
   e.preventDefault();
   const x = e.target.parentElement.getAttribute('data-x');
   const y = e.target.parentElement.getAttribute('data-y');
-  if (e.target.getAttribute('src') === '/img/flag-cell.png') {
+  //adding the logic to not flag checked cells
+  if (e.target.getAttribute('src') === '/img/flag-cell.png' && mapArray[x][y].checked !== true) {
     mapArray[x][y].flagged = false;
     e.target.src = '/img/blank-cell.png';
     flaggedMines--;
-  } else {
+  } else if (mapArray[x][y].checked !== true) {
     mapArray[x][y].flagged = true;
     e.target.src = '/img/flag-cell.png';
     flaggedMines++;
+  } else {
+    return 0;
   }
   updateFlagCounter(flaggedMines);
   const hasWon = checkForWin();

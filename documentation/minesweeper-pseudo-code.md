@@ -34,7 +34,7 @@ Game Play Setup listeners for:
   - attempts to "sweep" the clicked location
   - If there is no mine, then it will recursively check each adjacent location until it reaches a
     location that has an adjacent mine
-  - Mark each of these locations with a number representing the adjacent bombs
+  - Mark each of these locations with a number representing the adjacent bombs total value
   - If there is a mine, the game is over and the board detonates
 - right-click on the game board
   - check for cell flag status

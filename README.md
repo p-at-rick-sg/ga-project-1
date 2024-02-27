@@ -41,6 +41,7 @@ time - Replay previous games - save all actions and allow the user to replay the
 - _Stretch goal_ - implement the game into node so that state can be sotred in a firebase or mongo
   db - then allow multi-player from separate devices
 - _Stetch goal_ - Implement a cube map consisting of 6 sides
+- Share the exact game board - add in a method to share a password protected set of arrays to a friend to challenge them.
 
 **Major Challenges Encountered**
 

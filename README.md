@@ -36,9 +36,11 @@ x, y model.
 **Next Steps**: Planned future enhancements (icebox items): - Make 1st move always be a clear cell.
 (add logic to move the 1st cell mine if it's a hit anf then continue with the game) - 1 Free clear -
 allow user to clear 1 cell and if it'a a mine they can continue, but with a reduced score or loss of
-time - Replay previous games - save all actions and allow the user to replay them or review them. -
-_Stretch goal_ - implement the game into node so that state can be sotred in a firebase or mongo
-db - then allow multi-player from separate devices.
+time - Replay previous games - save all actions and allow the user to replay them or review them.
+
+- _Stretch goal_ - implement the game into node so that state can be sotred in a firebase or mongo
+  db - then allow multi-player from separate devices
+- _Stetch goal_ - Implement a cube map consisting of 6 sides
 
 **Major Challenges Encountered**
 
